@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
       uploadToR2(originalBuffer, `original/${webpFilename}`, 'image/webp')
     ]
     
+    
     await Promise.all(uploadPromises)
     
     // Construir las URLs para cada tamaño
