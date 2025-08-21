@@ -45,12 +45,20 @@ class PublicationService {
 
   async findAll(
     filters: {
-      category?: string
       operationType?: string
+      category?: string
       province?: string
       city?: string
+      neighborhood?: string
+      totalSurface?: number
+      coveredSurface?: number
+      parkingSpaces?: number
+      rooms?: number
+      minPrice?: number
+      maxPrice?: number
+      bedrooms?: number
+      bathrooms?: number
       status?: string
-      userId?: string
       page?: number
       limit?: number
     } = {},
@@ -83,8 +91,8 @@ class PublicationService {
       searchFilters.status = filterParams.status
     }
 
-    if (filterParams.userId) {
-      searchFilters.userId = filterParams.userId
+    if (filterParams.neighborhood) {
+      searchFilters.neighborhood = filterParams.neighborhood
     }
 
     const [publications, total] = await Promise.all([

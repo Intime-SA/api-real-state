@@ -16,6 +16,15 @@ export async function GET(request: NextRequest) {
       userId: searchParams.get("userId") || undefined,
       page: Number.parseInt(searchParams.get("page") || "1"),
       limit: Number.parseInt(searchParams.get("limit") || "10"),
+      neighborhood: searchParams.get("neighborhood") || undefined,
+      totalSurface: Number.parseInt(searchParams.get("totalSurface") || "0") || undefined,
+      coveredSurface: Number.parseInt(searchParams.get("coveredSurface") || "0") || undefined,
+      parkingSpaces: Number.parseInt(searchParams.get("parkingSpaces") || "0") || undefined,
+      rooms: Number.parseInt(searchParams.get("rooms") || "0") || undefined,
+      minPrice: Number.parseInt(searchParams.get("minPrice") || "0") || undefined,
+      maxPrice: Number.parseInt(searchParams.get("maxPrice") || "0") || undefined,
+      bedrooms: Number.parseInt(searchParams.get("bedrooms") || "0") || undefined,
+      bathrooms: Number.parseInt(searchParams.get("bathrooms") || "0") || undefined,
     }
 
     const result = await publicationService.findAll(filters)
