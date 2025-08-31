@@ -25,6 +25,8 @@ export async function GET(request: NextRequest) {
       maxPrice: Number.parseInt(searchParams.get("maxPrice") || "0") || undefined,
       bedrooms: Number.parseInt(searchParams.get("bedrooms") || "0") || undefined,
       bathrooms: Number.parseInt(searchParams.get("bathrooms") || "0") || undefined,
+      all: searchParams.get("query") || 'active',
+      id: searchParams.get("id") || undefined,
     }
 
     const result = await publicationService.findAll(filters)

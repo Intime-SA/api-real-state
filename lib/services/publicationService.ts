@@ -61,6 +61,8 @@ class PublicationService {
       status?: string
       page?: number
       limit?: number
+      query?: string
+      id?: string
     } = {},
   ): Promise<{ publications: Publication[]; total: number; page: number; totalPages: number }> {
     const collection = await this.getCollection()
@@ -93,6 +95,17 @@ class PublicationService {
 
     if (filterParams.neighborhood) {
       searchFilters.neighborhood = filterParams.neighborhood
+    }
+
+    if (filterParams.query) {
+      searchFilters.status = filterParams.query
+    }
+    else {
+      searchFilters.status = 'active'
+    }
+    if (filterParams.id) {
+      console.log('filterParams.id', filterParams.id)
+      searchFilters._id = new ObjectId(filterParams.id)
     }
 
     const [publications, total] = await Promise.all([
