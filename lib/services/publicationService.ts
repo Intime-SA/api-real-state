@@ -100,9 +100,6 @@ class PublicationService {
     if (filterParams.query) {
       searchFilters.status = filterParams.query
     }
-    else {
-      searchFilters.status = 'active'
-    }
     if (filterParams.id) {
       console.log('filterParams.id', filterParams.id)
       searchFilters._id = new ObjectId(filterParams.id)
