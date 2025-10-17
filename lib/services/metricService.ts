@@ -155,6 +155,81 @@ class MetricService {
 
     return stats
   }
+
+  /**
+   * Obtiene los 4 KPIs principales: visitas totales y formularios por subject
+   */
+  async getKPIs(
+    filters: {
+      startDate?: string
+      endDate?: string
+    } = {},
+  ): Promise<{
+    visits: number
+    formsPublicacion: number
+    formsContacto: number
+    formsTasaciones: number
+  }> {
+    const collection = await this.getCollection()
+
+    const searchFilters: any = {}
+
+    // Filtro por rango de fechas
+    if (filters.startDate || filters.endDate) {
+      searchFilters.timestamp = {}
+      if (filters.startDate) {
+        searchFilters.timestamp.$gte = filters.startDate
+      }
+      if (filters.endDate) {
+        searchFilters.timestamp.$lte = filters.endDate
+      }
+    }
+
+    // Usar agregación de MongoDB para contar eficientemente
+    const pipeline = [
+      { $match: searchFilters },
+      {
+        $group: {
+          _id: {
+            type: '$type',
+            subject: { $ifNull: ['$subject', null] }
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ]
+
+    const results = await collection.aggregate(pipeline).toArray()
+
+    // Inicializar KPIs
+    const kpis = {
+      visits: 0,
+      formsPublicacion: 0,
+      formsContacto: 0,
+      formsTasaciones: 0,
+    }
+
+    // Procesar resultados de la agregación
+    for (const result of results) {
+      if (result._id.type === 'visit') {
+        kpis.visits = result.count
+      } else if (result._id.type === 'form') {
+        switch (result._id.subject) {
+          case 'publicacion':
+            kpis.formsPublicacion = result.count
+            break
+          case 'contacto':
+            kpis.formsContacto = result.count
+            break
+          case 'tasaciones':
+            kpis.formsTasaciones = result.count
+            break
+        }
+      }
+    }
+
+    return kpis
+  }
 }
 
 export const metricService = new MetricService()
