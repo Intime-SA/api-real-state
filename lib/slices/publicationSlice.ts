@@ -17,12 +17,12 @@ interface PublicationState {
     neighborhood: string
     hideExactAddress: boolean
     photos: string[]
-    totalSurface: number
-    coveredSurface: number
-    rooms: number
-    bedrooms: number
-    bathrooms: number
-    parkingSpaces: number
+    totalSurface?: number
+    coveredSurface?: number
+    rooms?: number
+    bedrooms?: number
+    bathrooms?: number
+    parkingSpaces?: number
     title: string
     description: string
     videoUrl: string
@@ -57,12 +57,12 @@ const initialState: PublicationState = {
     neighborhood: "",
     hideExactAddress: false,
     photos: [],
-    totalSurface: 0,
-    coveredSurface: 0,
-    rooms: 0,
-    bedrooms: 0,
-    bathrooms: 0,
-    parkingSpaces: 0,
+    totalSurface: undefined,
+    coveredSurface: undefined,
+    rooms: undefined,
+    bedrooms: undefined,
+    bathrooms: undefined,
+    parkingSpaces: undefined,
     title: "",
     description: "",
     videoUrl: "",
@@ -156,8 +156,8 @@ function updateStepDataStatus(state: PublicationState) {
   // Step 4: Photos
   state.stepStates[4].hasData = formData.photos.length > 0
 
-  // Step 5: Characteristics
-  state.stepStates[5].hasData = !!(formData.totalSurface || formData.rooms || formData.bedrooms || formData.bathrooms)
+  // Step 5: Characteristics (opcional - siempre se considera completo)
+  state.stepStates[5].hasData = true
 
   // Step 6: Title and Description
   state.stepStates[6].hasData = !!(formData.title && formData.description)

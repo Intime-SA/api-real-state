@@ -21,22 +21,22 @@ export default function Step5Characteristics() {
           <Ruler className="w-8 h-8 text-orange-400" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-white">Características Secundarias</h2>
-          <p className="text-slate-400">Sumá más información sobre tu inmueble</p>
+          <h2 className="text-xl font-semibold text-white">Características (Opcionales)</h2>
+          <p className="text-slate-400">Agregá información adicional sobre tu inmueble si lo deseás</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="totalSurface" className="text-blue-200">
-            Superficie total (requerido)
+            Superficie total (opcional)
           </Label>
           <div className="relative">
             <Input
               id="totalSurface"
               type="number"
-              value={formData.totalSurface}
-              onChange={(e) => handleFieldChange("totalSurface", Number(e.target.value))}
+              value={formData.totalSurface || ""}
+              onChange={(e) => handleFieldChange("totalSurface", e.target.value ? Number(e.target.value) : undefined)}
               className="bg-slate-700 border-slate-600 text-white pr-12"
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm">m²</span>
@@ -45,14 +45,14 @@ export default function Step5Characteristics() {
 
         <div>
           <Label htmlFor="coveredSurface" className="text-blue-200">
-            Superficie cubierta (requerido)
+            Superficie cubierta (opcional)
           </Label>
           <div className="relative">
             <Input
               id="coveredSurface"
               type="number"
-              value={formData.coveredSurface}
-              onChange={(e) => handleFieldChange("coveredSurface", Number(e.target.value))}
+              value={formData.coveredSurface || ""}
+              onChange={(e) => handleFieldChange("coveredSurface", e.target.value ? Number(e.target.value) : undefined)}
               className="bg-slate-700 border-slate-600 text-white pr-12"
             />
             <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm">m²</span>
@@ -61,52 +61,52 @@ export default function Step5Characteristics() {
 
         <div>
           <Label htmlFor="rooms" className="text-blue-200">
-            Ambientes (requerido)
+            Ambientes (opcional)
           </Label>
           <Input
             id="rooms"
             type="number"
-            value={formData.rooms}
-            onChange={(e) => handleFieldChange("rooms", Number(e.target.value))}
+            value={formData.rooms || ""}
+            onChange={(e) => handleFieldChange("rooms", e.target.value ? Number(e.target.value) : undefined)}
             className="bg-slate-700 border-slate-600 text-white"
           />
         </div>
 
         <div>
           <Label htmlFor="bedrooms" className="text-blue-200">
-            Dormitorios (requerido)
+            Dormitorios (opcional)
           </Label>
           <Input
             id="bedrooms"
             type="number"
-            value={formData.bedrooms}
-            onChange={(e) => handleFieldChange("bedrooms", Number(e.target.value))}
+            value={formData.bedrooms || ""}
+            onChange={(e) => handleFieldChange("bedrooms", e.target.value ? Number(e.target.value) : undefined)}
             className="bg-slate-700 border-slate-600 text-white"
           />
         </div>
 
         <div>
           <Label htmlFor="bathrooms" className="text-blue-200">
-            Baños (requerido)
+            Baños (opcional)
           </Label>
           <Input
             id="bathrooms"
             type="number"
-            value={formData.bathrooms}
-            onChange={(e) => handleFieldChange("bathrooms", Number(e.target.value))}
+            value={formData.bathrooms || ""}
+            onChange={(e) => handleFieldChange("bathrooms", e.target.value ? Number(e.target.value) : undefined)}
             className="bg-slate-700 border-slate-600 text-white"
           />
         </div>
 
         <div>
           <Label htmlFor="parkingSpaces" className="text-blue-200">
-            Cocheras (requerido)
+            Cocheras (opcional)
           </Label>
           <Input
             id="parkingSpaces"
             type="number"
-            value={formData.parkingSpaces}
-            onChange={(e) => handleFieldChange("parkingSpaces", Number(e.target.value))}
+            value={formData.parkingSpaces || ""}
+            onChange={(e) => handleFieldChange("parkingSpaces", e.target.value ? Number(e.target.value) : undefined)}
             className="bg-slate-700 border-slate-600 text-white"
           />
         </div>

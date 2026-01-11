@@ -230,6 +230,38 @@ class MetricService {
 
     return kpis
   }
+
+  /**
+   * Obtiene el conteo de visitas para una lista de IDs de propiedades
+   */
+  async getVisitsCountByProperties(propertyIds: string[]): Promise<Record<string, number>> {
+    const collection = await this.getCollection()
+
+    const pipeline = [
+      {
+        $match: {
+          type: 'visit',
+          idProperty: { $in: propertyIds }
+        }
+      },
+      {
+        $group: {
+          _id: '$idProperty',
+          count: { $sum: 1 }
+        }
+      }
+    ]
+
+    const results = await collection.aggregate(pipeline).toArray()
+
+    // Convertir resultados a un objeto Record<string, number>
+    const visitsCount: Record<string, number> = {}
+    for (const result of results) {
+      visitsCount[result._id] = result.count
+    }
+
+    return visitsCount
+  }
 }
 
 export const metricService = new MetricService()

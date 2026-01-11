@@ -10,12 +10,12 @@ export interface Publication {
   neighborhood?: string
   hideExactAddress: boolean
   photos: string[]
-  totalSurface: number
-  coveredSurface: number
-  rooms: number
-  bedrooms: number
-  bathrooms: number
-  parkingSpaces: number
+  totalSurface?: number
+  coveredSurface?: number
+  rooms?: number
+  bedrooms?: number
+  bathrooms?: number
+  parkingSpaces?: number
   title: string
   description: string
   videoUrl?: string
@@ -37,12 +37,12 @@ export interface CreatePublicationData {
   neighborhood?: string
   hideExactAddress: boolean
   photos: string[]
-  totalSurface: number
-  coveredSurface: number
-  rooms: number
-  bedrooms: number
-  bathrooms: number
-  parkingSpaces: number
+  totalSurface?: number
+  coveredSurface?: number
+  rooms?: number
+  bedrooms?: number
+  bathrooms?: number
+  parkingSpaces?: number
   title: string
   description: string
   videoUrl?: string
@@ -54,4 +54,8 @@ export interface CreatePublicationData {
 
 export interface UpdatePublicationData extends Partial<CreatePublicationData> {
   status?: "active" | "paused" | "sold" | "rented"
+}
+
+export interface PublicationWithVisits extends Publication {
+  visits: number
 }

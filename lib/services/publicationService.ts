@@ -1,6 +1,7 @@
 import { type Collection, type Db, ObjectId } from "mongodb"
 import clientPromise from "@/lib/mongo"
-import type { Publication, CreatePublicationData, UpdatePublicationData } from "@/lib/models/Publication"
+import type { Publication, CreatePublicationData, UpdatePublicationData, PublicationWithVisits } from "@/lib/models/Publication"
+import { metricService } from "@/lib/services/metricService"
 
 const DB_NAME = "real-state"
 const COLLECTION_NAME = "publications"
@@ -64,7 +65,7 @@ class PublicationService {
       query?: string
       id?: string
     } = {},
-  ): Promise<{ publications: Publication[]; total: number; page: number; totalPages: number }> {
+  ): Promise<{ publications: PublicationWithVisits[]; total: number; page: number; totalPages: number }> {
     const collection = await this.getCollection()
 
     const { page = 1, limit = 10, ...filterParams } = filters
@@ -112,8 +113,20 @@ class PublicationService {
 
     const totalPages = Math.ceil(total / limit)
 
+    // Obtener IDs de las publicaciones para consultar visitas
+    const publicationIds = publications.map(pub => pub._id!.toString())
+
+    // Obtener conteo de visitas para estas publicaciones
+    const visitsCount = await metricService.getVisitsCountByProperties(publicationIds)
+
+    // Agregar visitas a cada publicación
+    const publicationsWithVisits: PublicationWithVisits[] = publications.map(pub => ({
+      ...pub,
+      visits: visitsCount[pub._id!.toString()] || 0
+    }))
+
     return {
-      publications,
+      publications: publicationsWithVisits,
       total,
       page,
       totalPages,
@@ -168,7 +181,7 @@ class PublicationService {
       page?: number
       limit?: number
     } = {},
-  ): Promise<{ publications: Publication[]; total: number; page: number; totalPages: number }> {
+  ): Promise<{ publications: PublicationWithVisits[]; total: number; page: number; totalPages: number }> {
     const collection = await this.getCollection()
 
     const { page = 1, limit = 10, minPrice, maxPrice, ...filterParams } = filters
@@ -225,8 +238,20 @@ class PublicationService {
 
     const totalPages = Math.ceil(total / limit)
 
+    // Obtener IDs de las publicaciones para consultar visitas
+    const publicationIds = publications.map(pub => pub._id!.toString())
+
+    // Obtener conteo de visitas para estas publicaciones
+    const visitsCount = await metricService.getVisitsCountByProperties(publicationIds)
+
+    // Agregar visitas a cada publicación
+    const publicationsWithVisits: PublicationWithVisits[] = publications.map(pub => ({
+      ...pub,
+      visits: visitsCount[pub._id!.toString()] || 0
+    }))
+
     return {
-      publications,
+      publications: publicationsWithVisits,
       total,
       page,
       totalPages,
