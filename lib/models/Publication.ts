@@ -19,7 +19,7 @@ export interface Publication {
   title: string
   description: string
   videoUrl?: string
-  price: number
+  price: number | null
   currency: string
   expenses: number
   status: "active" | "paused" | "sold" | "rented"
@@ -46,7 +46,7 @@ export interface CreatePublicationData {
   title: string
   description: string
   videoUrl?: string
-  price: number
+  price: number | null
   currency: string
   expenses: number
   userId?: string

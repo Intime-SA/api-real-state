@@ -64,6 +64,9 @@ class PublicationService {
       limit?: number
       query?: string
       id?: string
+      title?: string
+      moreVisit?: string
+      searchCode?: string
     } = {},
   ): Promise<{ publications: PublicationWithVisits[]; total: number; page: number; totalPages: number }> {
     const collection = await this.getCollection()
@@ -74,6 +77,7 @@ class PublicationService {
     // Construir filtros de búsqueda
     const searchFilters: any = {}
 
+    // Aplicar filtros individuales
     if (filterParams.category) {
       searchFilters.category = filterParams.category
     }
@@ -101,13 +105,76 @@ class PublicationService {
     if (filterParams.query) {
       searchFilters.status = filterParams.query
     }
+
+    if (filterParams.title) {
+      // Búsqueda por coincidencia parcial en el título, insensible a mayúsculas
+      searchFilters.title = { $regex: filterParams.title, $options: 'i' }
+    }
+
+    // Aplicar filtros de precio
+    if (filterParams.minPrice !== undefined || filterParams.maxPrice !== undefined) {
+      searchFilters.price = {}
+      if (filterParams.minPrice !== undefined) {
+        searchFilters.price.$gte = filterParams.minPrice
+      }
+      if (filterParams.maxPrice !== undefined) {
+        searchFilters.price.$lte = filterParams.maxPrice
+      }
+    }
+
+    // Aplicar búsqueda general por palabras si existe searchCode
+    if (filterParams.searchCode) {
+      // Separar el searchCode en palabras individuales
+      const searchWords = filterParams.searchCode
+        .split(/\s+/) // Separar por espacios
+        .filter(word => word.length > 0) // Filtrar palabras vacías
+        .map(word => word.trim()); // Limpiar espacios
+
+      // Crear condiciones de búsqueda que combinen filtros existentes con búsqueda
+      const baseFilters = { ...searchFilters };
+      const searchConditions = [];
+
+      // Crear una condición que combine filtros base + búsqueda por cada palabra
+      for (const word of searchWords) {
+        const conditionWithFilters = { ...baseFilters };
+
+        // Agregar condición de búsqueda a esta combinación
+        conditionWithFilters.$or = [
+          { title: { $regex: word, $options: 'i' } },
+          { description: { $regex: word, $options: 'i' } },
+          { features: { $elemMatch: { $regex: word, $options: 'i' } } }
+        ];
+
+        searchConditions.push(conditionWithFilters);
+      }
+
+      // Reemplazar filtros con $or de todas las combinaciones
+      if (searchConditions.length > 0) {
+        searchFilters.$or = searchConditions;
+        // Limpiar filtros individuales ya que ahora están en el $or
+        Object.keys(baseFilters).forEach(key => {
+          delete searchFilters[key];
+        });
+      }
+    }
+
     if (filterParams.id) {
       console.log('filterParams.id', filterParams.id)
       searchFilters._id = new ObjectId(filterParams.id)
     }
 
+    // Determinar el ordenamiento
+    let sortCriteria: any = { createdAt: -1 }
+    let shouldSortByVisits = false
+
+    if (filterParams.moreVisit) {
+      // Si hay filtro de visitas, no ordenar en la consulta (ordenaremos después)
+      sortCriteria = {}
+      shouldSortByVisits = true
+    }
+
     const [publications, total] = await Promise.all([
-      collection.find(searchFilters).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
+      collection.find(searchFilters).sort(sortCriteria).skip(skip).limit(limit).toArray(),
       collection.countDocuments(searchFilters),
     ])
 
@@ -120,10 +187,26 @@ class PublicationService {
     const visitsCount = await metricService.getVisitsCountByProperties(publicationIds)
 
     // Agregar visitas a cada publicación
-    const publicationsWithVisits: PublicationWithVisits[] = publications.map(pub => ({
+    let publicationsWithVisits: PublicationWithVisits[] = publications.map(pub => ({
       ...pub,
       visits: visitsCount[pub._id!.toString()] || 0
     }))
+
+    // Ordenar por visitas si se especificó el filtro
+    if (shouldSortByVisits && filterParams.moreVisit) {
+      publicationsWithVisits.sort((a, b) => {
+        const visitsA = a.visits
+        const visitsB = b.visits
+
+        if (filterParams.moreVisit === "true") {
+          // Más visitados primero (descendente)
+          return visitsB - visitsA
+        } else {
+          // Menos visitados primero (ascendente)
+          return visitsA - visitsB
+        }
+      })
+    }
 
     return {
       publications: publicationsWithVisits,

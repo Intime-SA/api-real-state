@@ -18,7 +18,7 @@ export const publicationSchema = z.object({
   title: z.string().min(1, "El título es requerido").max(60, "El título no puede exceder 60 caracteres"),
   description: z.string().max(50000, "La descripción no puede exceder 50000 caracteres"),
   videoUrl: z.string().url("URL de video inválida").optional().or(z.literal("")),
-  price: z.number().min(1, "El precio es requerido"),
+  price: z.number().min(1, "El precio es requerido").nullable(),
   currency: z.enum(["USD", "ARS", "EUR"]),
   expenses: z.number().min(0, "Las expensas deben ser un número válido"),
   features: z.array(z.string()).optional(),

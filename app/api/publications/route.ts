@@ -21,12 +21,15 @@ export async function GET(request: NextRequest) {
       coveredSurface: Number.parseInt(searchParams.get("coveredSurface") || "0") || undefined,
       parkingSpaces: Number.parseInt(searchParams.get("parkingSpaces") || "0") || undefined,
       rooms: Number.parseInt(searchParams.get("rooms") || "0") || undefined,
-      minPrice: Number.parseInt(searchParams.get("minPrice") || "0") || undefined,
-      maxPrice: Number.parseInt(searchParams.get("maxPrice") || "0") || undefined,
+      minPrice: searchParams.get("minPrice") ? Number.parseInt(searchParams.get("minPrice")!) : undefined,
+      maxPrice: searchParams.get("maxPrice") ? Number.parseInt(searchParams.get("maxPrice")!) : undefined,
       bedrooms: Number.parseInt(searchParams.get("bedrooms") || "0") || undefined,
       bathrooms: Number.parseInt(searchParams.get("bathrooms") || "0") || undefined,
-      all: searchParams.get("query") || 'active',
+      query: searchParams.get("query") || 'active',
       id: searchParams.get("id") || undefined,
+      title: searchParams.get("title") || undefined,
+      moreVisit: searchParams.get("moreVisit") || undefined,
+      searchCode: searchParams.get("searchCode") || undefined,
     }
 
     const result = await publicationService.findAll(filters)
